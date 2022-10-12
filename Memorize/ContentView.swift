@@ -11,20 +11,10 @@ import SwiftUI
 struct ContentView: View {
     
    @ObservedObject var viewModel: EmojiMemoryGameVM
-
-//    let plantEmojis = ["🌱", "🌲", "🌳", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌾", "🌿", "🍀", "🍁", "🍂", "🥀", "🍃", "🍄", "🎄", "🪷", "☘️", "💐"]
-//    let plantColorTheme = Color.green
-//
-//    let vehicleEmojis = ["🚗", "✈️", "🚁", "🚲", "🚢", "🛶", "🚀", "🛻", "🚚", "🚂", "🚠", "🚄", "🚜", "🏍", "🛴", "🛵"]
-//    let vehicleColorTheme = Color.red
-//
-//    let drinkEmojis = ["🥃", "🥛", "🥤", "🍹", "🧃", "🧉", "🧋", "🫖", "🍻", "🍾", "🥂", "🫗", "🍵", "🍶", "🍷", "🍸", "🍺", "☕️"]
-//    let drinkColorTheme = Color.blue
-    
     
     var body: some View {
         VStack {
-            Text("Memorize!")
+            Text(viewModel.themeName)
                 .font(.largeTitle)
             
             ScrollView {
@@ -38,68 +28,20 @@ struct ContentView: View {
                     })
                 })
             }
-//            .foregroundColor(themeColor)
+            .foregroundColor(viewModel.themeColor)
             
             Spacer()
-//            HStack {
-//                plantButton
-//                vehicleButton
-//                drinkButton
-//            }
+            
+            Button(action: {
+                viewModel.newGame()
+            },label: {
+                Text("New game")
+                    .font(.title)
+            })
             
         }
         .padding(.horizontal)
     }
-    
-//    var plantButton: some View {
-//        Button(action: {
-//            self.emojis = plantEmojis
-//            self.emojis.shuffle()
-//            self.themeColor = plantColorTheme
-//        }, label: {
-//            VStack {
-//                Image(systemName: "leaf.circle")
-//                    .font(/*@START_MENU_TOKEN@*/.largeTitle/*@END_MENU_TOKEN@*/)
-//                Spacer()
-//                Text("Plants")
-//            }
-//            .frame(height: 70.0)
-//
-//        })
-//    }
-//
-//    var vehicleButton: some View {
-//        Button(action: {
-//            self.emojis = vehicleEmojis
-//            self.emojis.shuffle()
-//            self.themeColor = vehicleColorTheme
-//        }, label: {
-//            VStack {
-//                Image(systemName: "car")
-//                    .font(/*@START_MENU_TOKEN@*/.largeTitle/*@END_MENU_TOKEN@*/)
-//                Spacer()
-//                Text("Vehicles")
-//
-//            }
-//            .frame(height: 70.0)
-//        })
-//    }
-//
-//    var drinkButton: some View {
-//        Button(action: {
-//            self.emojis = drinkEmojis
-//            self.emojis.shuffle()
-//            self.themeColor = drinkColorTheme
-//        }, label: {
-//            VStack {
-//                Image(systemName: "cup.and.saucer.fill")
-//                    .font(/*@START_MENU_TOKEN@*/.largeTitle/*@END_MENU_TOKEN@*/)
-//                Spacer()
-//                Text("Drinks")
-//            }
-//            .frame(height: 70.0)
-//        })
-//    }
     
 }
 
@@ -126,6 +68,27 @@ struct CardView: View {
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 struct ContentView_Previews: PreviewProvider {

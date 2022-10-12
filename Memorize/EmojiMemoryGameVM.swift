@@ -9,22 +9,57 @@ import SwiftUI
 
 class EmojiMemoryGameVM: ObservableObject {
     
-    static let emojis = ["🚗", "✈️", "🚁", "🚲", "🚢", "🛶", "🚀", "🛻", "🚚", "🚂", "🚠", "🚄", "🚜", "🏍", "🛴", "🛵"]
+    @Published private var gameModel: MemoryGameModel<String>
+    private var themeModel: ThemeModel
     
-    static func createMemoryGameModel() -> MemoryGameModel<String> {
-        MemoryGameModel(numberOfPairsOfCards: 4) {pairIndex in
+    var cards: Array<MemoryGameModel<String>.Card> {
+        return gameModel.cards
+    }
+    var themeColor: Color {
+        return colorFromHex(hex: themeModel.curTheme.themeColor)
+    }
+    var themeName: String {
+        return themeModel.curTheme.themeName
+    }
+    
+    init() {
+        themeModel = ThemeModel()
+        var emojis = themeModel.curTheme.emojiSets
+        let maxCards = emojis.count
+        emojis.shuffle() // shuffle the set of emojis available in a theme
+        gameModel = MemoryGameModel(numberOfPairsOfCards: themeModel.curTheme.numberOfPairsOfCardsForTheme > maxCards ? maxCards : themeModel.curTheme.numberOfPairsOfCardsForTheme) {pairIndex in
             emojis[pairIndex]
         }
     }
     
-    @Published private var model: MemoryGameModel<String> = createMemoryGameModel()
-        
-    var cards: Array<MemoryGameModel<String>.Card> {
-        return model.cards
+    func createGameModel() {
+        var emojis = themeModel.curTheme.emojiSets
+        let maxCards = emojis.count
+        emojis.shuffle()
+        gameModel = MemoryGameModel(numberOfPairsOfCards: themeModel.curTheme.numberOfPairsOfCardsForTheme > maxCards ? maxCards : themeModel.curTheme.numberOfPairsOfCardsForTheme) {pairIndex in
+            emojis[pairIndex]
+        }
     }
     
     func choose(_ card: MemoryGameModel<String>.Card) {
-        model.choose(card)
+        gameModel.choose(card)
+    }
+    
+    func newGame() {
+        themeModel.newGame()
+        var emojis = themeModel.curTheme.emojiSets
+        let maxCards = emojis.count
+        emojis.shuffle()
+        gameModel = MemoryGameModel(numberOfPairsOfCards: themeModel.curTheme.numberOfPairsOfCardsForTheme > maxCards ? maxCards : themeModel.curTheme.numberOfPairsOfCardsForTheme) {pairIndex in
+            emojis[pairIndex]
+        }
+    }
+    
+    private func colorFromHex(hex: Int) -> Color {
+        return Color(
+            red: Double((hex & 0xFF0000) >> 16) / 255.0,
+            green: Double((hex & 0x00FF00) >> 8) / 255.0,
+            blue: Double(hex & 0x0000FF) / 255.0)
     }
     
 }

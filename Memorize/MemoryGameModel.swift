@@ -12,6 +12,19 @@ struct MemoryGameModel<CardContent> where CardContent: Equatable {
     private(set) var cards: Array<Card>
     
     private var indexOfFaceUpCard: Int?
+        
+    init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) {
+        cards = Array<Card>()
+        
+        // add numberOfPairsOfCards * 2 cards to cards array
+        for pairIndex in 0..<numberOfPairsOfCards {
+            let content = createCardContent(pairIndex)
+            cards.append(Card(content: content, id: pairIndex * 2))
+            cards.append(Card(content: content, id: pairIndex * 2 + 1))
+        }
+        
+        cards.shuffle()
+    }
     
     mutating func choose(_ card: Card) {
 //        card.isFaceUp = !card.isFaceUp // cannot do this since 'card' argument is constant and copied
@@ -26,6 +39,9 @@ struct MemoryGameModel<CardContent> where CardContent: Equatable {
                 indexOfFaceUpCard = nil
             } else { // no face-up card
                 for index in cards.indices {
+//                    if cards[index].isFaceUp {
+//                        cards[index].hasSeen = true
+//                    }
                     cards[index].isFaceUp = false
                 }
                 indexOfFaceUpCard = chosenIndex
@@ -33,7 +49,6 @@ struct MemoryGameModel<CardContent> where CardContent: Equatable {
             
             cards[chosenIndex].isFaceUp.toggle()
         }
-//        print("chosenCard = \(chosenCard)")
     }
     
     func index(of targetCard: Card) -> Int {
@@ -45,22 +60,11 @@ struct MemoryGameModel<CardContent> where CardContent: Equatable {
         return 0
     }
     
-    init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) {
-        cards = Array<Card>()
-        
-        // add numberOfPairsOfCards * 2 cards to cards array
-        for pairIndex in 0..<numberOfPairsOfCards {
-            let content = createCardContent(pairIndex)
-            cards.append(Card(content: content, id: pairIndex * 2))
-            cards.append(Card(content: content, id: pairIndex * 2 + 1))
-        }
-        
-    }
-    
     struct Card: Identifiable {
         var isFaceUp: Bool = false
         var isMatched: Bool = false
         var content: CardContent
+//        var hasSeen: Bool = false
         
         var id: Int
     }
