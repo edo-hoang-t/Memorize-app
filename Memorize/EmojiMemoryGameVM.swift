@@ -21,6 +21,9 @@ class EmojiMemoryGameVM: ObservableObject {
     var themeName: String {
         return themeModel.curTheme.themeName
     }
+    var gameScore: Int {
+        return gameModel.score
+    }
     
     init() {
         themeModel = ThemeModel()

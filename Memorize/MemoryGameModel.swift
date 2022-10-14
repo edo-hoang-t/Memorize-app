@@ -12,9 +12,12 @@ struct MemoryGameModel<CardContent> where CardContent: Equatable {
     private(set) var cards: Array<Card>
     
     private var indexOfFaceUpCard: Int?
+    
+    private(set) var score: Int
         
     init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) {
         cards = Array<Card>()
+        score = 0
         
         // add numberOfPairsOfCards * 2 cards to cards array
         for pairIndex in 0..<numberOfPairsOfCards {
@@ -32,16 +35,23 @@ struct MemoryGameModel<CardContent> where CardContent: Equatable {
                 !cards[chosenIndex].isFaceUp,
                 !cards[chosenIndex].isMatched {
             if let faceUpCardIndex = indexOfFaceUpCard { // a card is already face up i.e. chosen previously
-                if cards[chosenIndex].content == cards[faceUpCardIndex].content {
+                if cards[chosenIndex].content == cards[faceUpCardIndex].content { // a match
                     cards[chosenIndex].isMatched = true
                     cards[faceUpCardIndex].isMatched = true
+                    score += 2
+                } else { // a mismatch
+                    if cards[chosenIndex].hasSeen {
+                        score -= 1
+                    }
+                    if cards[faceUpCardIndex].hasSeen {
+                        score -= 1
+                    }
                 }
+                cards[chosenIndex].hasSeen = true
+                cards[faceUpCardIndex].hasSeen = true
                 indexOfFaceUpCard = nil
             } else { // no face-up card
                 for index in cards.indices {
-//                    if cards[index].isFaceUp {
-//                        cards[index].hasSeen = true
-//                    }
                     cards[index].isFaceUp = false
                 }
                 indexOfFaceUpCard = chosenIndex
@@ -64,7 +74,7 @@ struct MemoryGameModel<CardContent> where CardContent: Equatable {
         var isFaceUp: Bool = false
         var isMatched: Bool = false
         var content: CardContent
-//        var hasSeen: Bool = false
+        var hasSeen: Bool = false
         
         var id: Int
     }
