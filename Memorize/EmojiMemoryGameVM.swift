@@ -8,11 +8,12 @@
 import SwiftUI
 
 class EmojiMemoryGameVM: ObservableObject {
+    typealias Card = MemoryGameModel<String>.Card
     
     @Published private var gameModel: MemoryGameModel<String>
     private var themeModel: ThemeModel
     
-    var cards: Array<MemoryGameModel<String>.Card> {
+    var cards: Array<Card> {
         return gameModel.cards
     }
     var themeColor: Color {
@@ -44,7 +45,7 @@ class EmojiMemoryGameVM: ObservableObject {
         }
     }
     
-    func choose(_ card: MemoryGameModel<String>.Card) {
+    func choose(_ card: Card) {
         gameModel.choose(card)
     }
     
