@@ -21,17 +21,16 @@ struct EmojiMemoryGameView: View {
                     .font(.largeTitle)
             }
             
-            
-            ScrollView {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))], content: {
-                    ForEach(gameViewModel.cards, content: {card in
-                        CardView(card: card)
-                            .aspectRatio(2/3, contentMode: .fit)
-                            .onTapGesture {
-                                gameViewModel.choose(card)
-                            }
-                    })
-                })
+            AspectVGrid(items: gameViewModel.cards, aspectRatio: 2/3) { card in
+                if card.isMatched && !card.isFaceUp {
+                    Rectangle().opacity(0)
+                } else {
+                    CardView(card: card)
+                        .padding(4)
+                        .onTapGesture {
+                            gameViewModel.choose(card)
+                        }
+                }
             }
             .foregroundColor(gameViewModel.themeColor)
             
@@ -63,11 +62,14 @@ struct CardView: View {
                 if card.isFaceUp {
                     roundedRect.foregroundColor(.white)
                     roundedRect.strokeBorder(lineWidth: DrawingConstants.lineWidth)
+                    Pie(startAngle: Angle(degrees: -90), endAngle: Angle(degrees: 20)).padding(5).opacity(DrawingConstants.pieOpacity)
                     Text(card.content)
                         .font(font(in: geometry.size))
-                } else if card.isMatched {
-                    roundedRect.opacity(0)
-                } else {
+                }
+//                else if card.isMatched { // move this part above to make use of @ViewBuilder
+//                    roundedRect.opacity(0)
+//                }
+                else {
                     roundedRect.fill()
                 }
             }
@@ -79,9 +81,10 @@ struct CardView: View {
     }
     
     private struct DrawingConstants {
-        static let cornerRadius: CGFloat = 20
+        static let cornerRadius: CGFloat = 15
         static let lineWidth: CGFloat = 3
-        static let fontScale: CGFloat = 0.8
+        static let fontScale: CGFloat = 0.7
+        static let pieOpacity: CGFloat = 0.5
     }
 }
 
@@ -111,10 +114,8 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         
         let emojiGameVM = EmojiMemoryGameVM()
-        
-        EmojiMemoryGameView(gameViewModel: emojiGameVM)
-            .preferredColorScheme(.dark)
-        EmojiMemoryGameView(gameViewModel: emojiGameVM)
+        emojiGameVM.choose(emojiGameVM.cards.first!)
+        return EmojiMemoryGameView(gameViewModel: emojiGameVM)
             .preferredColorScheme(.light)
             
     }

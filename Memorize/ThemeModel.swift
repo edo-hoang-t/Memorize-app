@@ -10,11 +10,11 @@ import Foundation
 struct ThemeModel {
     
     var themes: Array<Theme> = [
-        Theme(themeName: "Vehicles", emojiSets: ["🚗", "✈️", "🚁", "🚲", "🚢", "🛶", "🚀", "🛻", "🚚", "🚂", "🚠", "🚄", "🚜", "🏍", "🛴", "🛵"], themeColor: 0xFF0000, numberOfPairsOfCardsForTheme: 14),
-        Theme(themeName: "Plants", emojiSets: ["🌱", "🌲", "🌳", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌾", "🌿", "🍀", "🍁", "🍂", "🥀", "🍃", "🍄", "🎄", "🪷", "☘️", "💐"], themeColor: 0x00FF00, numberOfPairsOfCardsForTheme: 18),
-        Theme(themeName: "Drinks", emojiSets: ["🥃", "🥛", "🥤", "🍹", "🧃", "🧉", "🧋", "🫖", "🍻", "🍾", "🥂", "🫗", "🍵", "🍶", "🍷", "🍸", "🍺", "☕️"], themeColor: 0x0000FF, numberOfPairsOfCardsForTheme: 16),
+        Theme(themeName: "Vehicles", emojiSets: ["🚗", "✈️", "🚁", "🚲", "🚢", "🛶", "🚀", "🛻", "🚚", "🚂", "🚠", "🚄", "🚜", "🏍", "🛴", "🛵"], themeColor: 0xFF0000, numberOfPairsOfCardsForTheme: 7),
+        Theme(themeName: "Plants", emojiSets: ["🌱", "🌲", "🌳", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌾", "🌿", "🍀", "🍁", "🍂", "🥀", "🍃", "🍄", "🎄", "🪷", "☘️", "💐"], themeColor: 0x00FF00, numberOfPairsOfCardsForTheme: 9),
+        Theme(themeName: "Drinks", emojiSets: ["🥃", "🥛", "🥤", "🍹", "🧃", "🧉", "🧋", "🫖", "🍻", "🍾", "🥂", "🫗", "🍵", "🍶", "🍷", "🍸", "🍺", "☕️"], themeColor: 0x0000FF, numberOfPairsOfCardsForTheme: 8),
         Theme(themeName: "Animals", emojiSets: ["🦑", "🦋", "🐟", "🐊", "🦓", "🐧", "🦆", "🐜", "🐝", "🐳", "🦕", "🦩"], themeColor: 0x7F601F, numberOfPairsOfCardsForTheme: 10),
-        Theme(themeName: "Flags", emojiSets: ["🏳️‍🌈", "🏳️‍⚧️", "🇺🇳", "🇦🇫", "🇦🇽", "🇦🇱", "🇩🇿", "🇦🇸", "🇦🇩", "🇦🇮", "🇧🇪", "🇻🇳", "🇺🇸", "🇭🇰"], themeColor: 0xE86C38, numberOfPairsOfCardsForTheme: 12),
+        Theme(themeName: "Flags", emojiSets: ["🏳️‍🌈", "🏳️‍⚧️", "🇺🇳", "🇦🇫", "🇦🇽", "🇦🇱", "🇩🇿", "🇦🇸", "🇦🇩", "🇦🇮", "🇧🇪", "🇻🇳", "🇺🇸", "🇭🇰"], themeColor: 0xE86C38, numberOfPairsOfCardsForTheme: 6),
         Theme(themeName: "Faces", emojiSets: ["😀", "🤣", "🥰", "🥳", "🧐", "😓", "😡", "🫡", "😴", "😋", "🥺"], themeColor: 0xFFFF00, numberOfPairsOfCardsForTheme: 8)
     ]
     
