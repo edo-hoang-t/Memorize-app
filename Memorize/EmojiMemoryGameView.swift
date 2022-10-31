@@ -57,23 +57,20 @@ struct CardView: View {
     var body: some View {
         GeometryReader(content: {geometry in
             ZStack {
-                let roundedRect = RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius)
-                
-                if card.isFaceUp {
-                    roundedRect.foregroundColor(.white)
-                    roundedRect.strokeBorder(lineWidth: DrawingConstants.lineWidth)
-                    Pie(startAngle: Angle(degrees: -90), endAngle: Angle(degrees: 20)).padding(5).opacity(DrawingConstants.pieOpacity)
-                    Text(card.content)
-                        .font(font(in: geometry.size))
-                }
-//                else if card.isMatched { // move this part above to make use of @ViewBuilder
-//                    roundedRect.opacity(0)
-//                }
-                else {
-                    roundedRect.fill()
-                }
+                Pie(startAngle: Angle(degrees: -90), endAngle: Angle(degrees: 20)).padding(5).opacity(DrawingConstants.pieOpacity)
+                Text(card.content)
+                    .rotationEffect(Angle.degrees(card.isMatched ? 360 : 0))
+                    .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false))
+//                    .font(font(in: geometry.size))
+                    .font(Font.system(size: DrawingConstants.fontSize))
+                    .scaleEffect(scale(thatFits: geometry.size))
             }
+            .cardify(isFaceUp: card.isFaceUp)
         })
+    }
+    
+    private func scale(thatFits size: CGSize) -> CGFloat {
+        min(size.width, size.height) / (DrawingConstants.fontSize / DrawingConstants.fontScale)
     }
     
     private func font(in size: CGSize) -> Font {
@@ -81,10 +78,9 @@ struct CardView: View {
     }
     
     private struct DrawingConstants {
-        static let cornerRadius: CGFloat = 15
-        static let lineWidth: CGFloat = 3
         static let fontScale: CGFloat = 0.7
-        static let pieOpacity: CGFloat = 0.5
+        static let pieOpacity: CGFloat = 0.3
+        static let fontSize: CGFloat = 32
     }
 }
 
@@ -112,12 +108,17 @@ struct CardView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        
         let emojiGameVM = EmojiMemoryGameVM()
-        emojiGameVM.choose(emojiGameVM.cards.first!)
         return EmojiMemoryGameView(gameViewModel: emojiGameVM)
             .preferredColorScheme(.light)
-            
+
+    }
+}
+
+
+struct Previews_EmojiMemoryGameView_Previews: PreviewProvider {
+    static var previews: some View {
+        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
     }
 }
 
