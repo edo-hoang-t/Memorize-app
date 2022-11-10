@@ -49,6 +49,10 @@ class EmojiMemoryGameVM: ObservableObject {
         gameModel.choose(card)
     }
     
+    func shuffle() {
+        gameModel.shuffle()
+    }
+    
     func newGame() {
         themeModel.newGame()
         var emojis = themeModel.curTheme.emojiSets

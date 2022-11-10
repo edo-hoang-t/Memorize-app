@@ -9,42 +9,128 @@ import SwiftUI
 
 struct EmojiMemoryGameView: View {
     
-   @ObservedObject var gameViewModel: EmojiMemoryGameVM
+    @ObservedObject var gameViewModel: EmojiMemoryGameVM
+    @Namespace private var dealingNamespace
     
     var body: some View {
-        VStack {
-            HStack {
-                Text(gameViewModel.themeName)
-                    .font(.largeTitle)
+        ZStack(alignment: .bottom) {
+            VStack {
+                HStack {
+                    Text(gameViewModel.themeName)
+                        .font(.largeTitle)
+                    Spacer()
+                    Text(String(gameViewModel.gameScore))
+                        .font(.largeTitle)
+                }
+                
+                gameBody
+                
                 Spacer()
-                Text(String(gameViewModel.gameScore))
-                    .font(.largeTitle)
+                
+                HStack {
+                    newGame
+                    Spacer()
+                    shuffle
+                }
+                .padding(.vertical)
+                
             }
-            
-            AspectVGrid(items: gameViewModel.cards, aspectRatio: 2/3) { card in
-                if card.isMatched && !card.isFaceUp {
-                    Rectangle().opacity(0)
-                } else {
-                    CardView(card: card)
-                        .padding(4)
-                        .onTapGesture {
+            deckBody
+        }
+        .padding()
+    }
+    
+    var newGame: some View {
+        Button(action: {
+            withAnimation {
+                dealt = []
+                gameViewModel.newGame()
+            }
+        },label: {
+            Text("New game")
+                .font(.title)
+        })
+    }
+    
+    var shuffle: some View {
+        Button(action: {
+            withAnimation {
+                gameViewModel.shuffle()
+            }
+        },label: {
+            Text("Shuffle")
+                .font(.title)
+        })
+    }
+    
+    @State private var dealt = Set<Int>()
+    
+    private func deal(_ card: EmojiMemoryGameVM.Card) {
+        dealt.insert(card.id)
+    }
+    
+    private func isUndealt(_ card: EmojiMemoryGameVM.Card) -> Bool {
+        return !dealt.contains(card.id)
+    }
+    
+    private func dealAnimation(for card: EmojiMemoryGameVM.Card) -> Animation {
+        var delay: Double = 0.0
+        if let index = gameViewModel.cards.firstIndex(where: { $0.id == card.id }) {
+            delay = Double(index) * (CardConstants.totalDealDuration / Double(gameViewModel.cards.count))
+        }
+        return Animation.easeInOut(duration: CardConstants.dealDuration).delay(delay)
+    }
+    
+    private func zIndex(of card: EmojiMemoryGameVM.Card) -> Double {
+        -Double(gameViewModel.cards.firstIndex(where: { $0.id == card.id }) ?? 0)
+    }
+    
+    var gameBody: some View {
+        AspectVGrid(items: gameViewModel.cards, aspectRatio: CardConstants.aspectRatio) { card in
+            if isUndealt(card) || (card.isMatched && !card.isFaceUp) {
+                Rectangle().opacity(0)
+            } else {
+                CardView(card: card)
+                    .matchedGeometryEffect(id: card.id, in: dealingNamespace)
+                    .padding(4)
+                    .transition(AnyTransition.asymmetric(insertion: .identity, removal: .scale))
+                    .zIndex(zIndex(of: card))
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 1.5)) {
                             gameViewModel.choose(card)
                         }
+                    }
+            }
+        }
+        .foregroundColor(gameViewModel.themeColor)
+    }
+    
+    var deckBody: some View {
+        ZStack {
+            ForEach(gameViewModel.cards.filter(isUndealt)) { card in
+                CardView(card: card)
+                    .transition(.asymmetric(insertion: .opacity, removal: .identity))
+                    .matchedGeometryEffect(id: card.id, in: dealingNamespace)
+            }
+        }
+        .frame(width: CardConstants.undealtWidth, height: CardConstants.undealtHeight)
+        .foregroundColor(gameViewModel.themeColor)
+        .onTapGesture {
+            // "deals" card
+            for card in gameViewModel.cards {
+                withAnimation(dealAnimation(for: card)) {
+                    deal(card)
                 }
             }
-            .foregroundColor(gameViewModel.themeColor)
-            
-            Spacer()
-            
-            Button(action: {
-                gameViewModel.newGame()
-            },label: {
-                Text("New game")
-                    .font(.title)
-            })
-            
         }
-        .padding(.horizontal)
+    }
+    
+    private struct CardConstants {
+        static let aspectRatio : CGFloat = 2/3
+        static let undealtHeight: CGFloat = 90
+        static let undealtWidth = undealtHeight * aspectRatio
+        static let dealDuration = 0.5
+        static let totalDealDuration = 2.0
     }
     
 }
@@ -54,14 +140,28 @@ struct CardView: View {
     
     let card: EmojiMemoryGameVM.Card
     
+    @State private var animatedBonusRemaining: Double = 0
+    
     var body: some View {
         GeometryReader(content: {geometry in
             ZStack {
-                Pie(startAngle: Angle(degrees: -90), endAngle: Angle(degrees: 20)).padding(5).opacity(DrawingConstants.pieOpacity)
+                Group {
+                    if card.isConsumingBonusTime {
+                        Pie(startAngle: Angle(degrees: 0-90), endAngle: Angle(degrees: (1-animatedBonusRemaining)*360-90))
+                            .onAppear {
+                                animatedBonusRemaining = card.bonusRemaining
+                                withAnimation(.linear(duration: card.bonusTimeRemaining)) {
+                                    animatedBonusRemaining = 0
+                                }
+                            }
+                    } else {
+                        Pie(startAngle: Angle(degrees: 0-90), endAngle: Angle(degrees: (1-card.bonusRemaining)*360-90))
+                    }
+                }.padding(5).opacity(DrawingConstants.pieOpacity)
                 Text(card.content)
+                    .animation(Animation.linear(duration: 0))
                     .rotationEffect(Angle.degrees(card.isMatched ? 360 : 0))
                     .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false))
-//                    .font(font(in: geometry.size))
                     .font(Font.system(size: DrawingConstants.fontSize))
                     .scaleEffect(scale(thatFits: geometry.size))
             }
@@ -122,3 +222,9 @@ struct Previews_EmojiMemoryGameView_Previews: PreviewProvider {
     }
 }
 
+
+struct Previews_EmojiMemoryGameView_Previews_2: PreviewProvider {
+    static var previews: some View {
+        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
+    }
+}
